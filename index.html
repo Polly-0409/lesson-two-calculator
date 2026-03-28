@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- Тема из localStorage до отрисовки страницы (общий ключ с калькулятором) -->
+    <!-- Тема до первой отрисовки: светлая (по умолчанию), тёмная или одна из трёх дополнительных -->
     <script>
         (function () {
             try {
-                if (localStorage.getItem('family_budget_theme') === 'dark') {
+                var t = localStorage.getItem('family_budget_theme');
+                if (t === 'dark') {
                     document.documentElement.setAttribute('data-theme', 'dark');
+                } else if (t === 'warm' || t === 'ocean' || t === 'forest') {
+                    document.documentElement.setAttribute('data-theme', t);
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
                 }
             } catch (e) {}
         })();
@@ -64,9 +69,9 @@
             <p>Данные остаются в вашем браузере (localStorage). Мы их не собираем и не видим.</p>
         </article>
         <article class="landing__feature">
-            <div class="landing__feature-icon" aria-hidden="true">🌙</div>
-            <h2>Светлая и тёмная тема</h2>
-            <p>Выберите комфортный режим — настройка сохраняется между визитами.</p>
+            <div class="landing__feature-icon" aria-hidden="true">🎨</div>
+            <h2>Пять тем оформления</h2>
+            <p>Светлая, тёмная и три дополнительные палитры — выберите внизу справа; настройка сохраняется.</p>
         </article>
     </section>
 
@@ -85,34 +90,73 @@
     </footer>
 </main>
 
-<!-- Кнопка темы: тот же паттерн, что и в budget.html -->
-<button type="button" class="theme-toggle" id="themeToggle" aria-label="Переключить тему: светлая или тёмная" title="Светлая / тёмная тема">
-    <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
-    <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
-</button>
+<!-- Панель выбора из пяти тем: фиксирована в правом нижнем углу -->
+<nav class="theme-picker" id="themePicker" aria-label="Выбор темы оформления страницы">
+    <div class="theme-picker__title">Тема оформления</div>
+    <div class="theme-picker__grid" role="group">
+        <!-- data-theme: light — сброс атрибута на &lt;html&gt; -->
+        <button type="button" class="theme-picker__btn" data-theme="light" aria-pressed="false">
+            <span class="theme-picker__emoji" aria-hidden="true">☀️</span> Светлая
+        </button>
+        <button type="button" class="theme-picker__btn" data-theme="dark" aria-pressed="false">
+            <span class="theme-picker__emoji" aria-hidden="true">🌙</span> Тёмная
+        </button>
+        <!-- Три дополнительные темы (палитры в css/theme.css) -->
+        <button type="button" class="theme-picker__btn" data-theme="warm" aria-pressed="false">
+            <span class="theme-picker__emoji" aria-hidden="true">🌅</span> Тёплая
+        </button>
+        <button type="button" class="theme-picker__btn" data-theme="ocean" aria-pressed="false">
+            <span class="theme-picker__emoji" aria-hidden="true">🌊</span> Океан
+        </button>
+        <button type="button" class="theme-picker__btn theme-picker__btn--full" data-theme="forest" aria-pressed="false">
+            <span class="theme-picker__emoji" aria-hidden="true">🌲</span> Лес
+        </button>
+    </div>
+</nav>
 
 <script>
 (function () {
     var KEY = 'family_budget_theme';
-    function getTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    var THEMES = ['light', 'dark', 'warm', 'ocean', 'forest'];
+
+    function getActiveTheme() {
+        var a = document.documentElement.getAttribute('data-theme');
+        if (!a) return 'light';
+        return THEMES.indexOf(a) >= 0 ? a : 'light';
     }
-    function applyTheme(theme) {
-        if (theme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
+
+    function applyTheme(name) {
+        if (name === 'light') {
             document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', name);
         }
         try {
-            localStorage.setItem(KEY, theme === 'dark' ? 'dark' : 'light');
+            localStorage.setItem(KEY, name === 'light' ? 'light' : name);
         } catch (e) {}
+        syncPicker();
     }
-    var btn = document.getElementById('themeToggle');
-    if (btn) {
-        btn.addEventListener('click', function () {
-            applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+
+    function syncPicker() {
+        var current = getActiveTheme();
+        var buttons = document.querySelectorAll('.theme-picker__btn[data-theme]');
+        for (var i = 0; i < buttons.length; i++) {
+            var b = buttons[i];
+            var id = b.getAttribute('data-theme');
+            b.setAttribute('aria-pressed', id === current ? 'true' : 'false');
+        }
+    }
+
+    var picker = document.getElementById('themePicker');
+    if (picker) {
+        picker.addEventListener('click', function (e) {
+            var btn = e.target.closest('.theme-picker__btn[data-theme]');
+            if (!btn) return;
+            var name = btn.getAttribute('data-theme');
+            if (name) applyTheme(name);
         });
     }
+    syncPicker();
 })();
 </script>
 </body>
