@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Тема из localStorage до отрисовки страницы (общий ключ с калькулятором) -->
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('family_budget_theme') === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Семейный бюджет — бесплатный учёт доходов и расходов в браузере. Данные только у вас на устройстве.">
+    <title>Семейный бюджет — главная</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+<main class="landing">
+    <!-- Верхняя полоса: название проекта -->
+    <header class="landing__nav" aria-label="Шапка сайта">
+        <div>
+            <div class="landing__logo">Семейный бюджет</div>
+            <span class="landing__badge">без регистрации · только в браузере</span>
+        </div>
+    </header>
+
+    <!-- Главный блок приветствия и призыв к действию -->
+    <section class="landing__hero" aria-labelledby="hero-title">
+        <h1 id="hero-title">Доходы и расходы семьи — в одном месте</h1>
+        <p class="landing__lead">
+            Добавляйте операции, смотрите баланс и списки доходов и расходов.
+            Всё хранится локально в вашем браузере — без сервера и без передачи данных в интернет.
+        </p>
+        <div class="landing__cta-row">
+            <!-- Переход к рабочему калькулятору -->
+            <a class="landing__cta landing__cta--primary" href="budget.html">Открыть калькулятор</a>
+            <a class="landing__cta landing__cta--ghost" href="budget.html#transactionForm">Сразу к форме</a>
+        </div>
+        <p class="landing__note landing__note--spaced">
+            Подходит для личного и семейного планирования: зарплата, покупки, подписки, накопления.
+        </p>
+    </section>
+
+    <!-- Кратко о возможностях -->
+    <section class="landing__features" aria-label="Возможности">
+        <article class="landing__feature">
+            <div class="landing__feature-icon" aria-hidden="true">📊</div>
+            <h2>Сводка и баланс</h2>
+            <p>Общий доход, расход и остаток пересчитываются автоматически после каждой записи.</p>
+        </article>
+        <article class="landing__feature">
+            <div class="landing__feature-icon" aria-hidden="true">📝</div>
+            <h2>Категории и описания</h2>
+            <p>Подписывайте операции и при желании указывайте категорию — удобно для разбора трат.</p>
+        </article>
+        <article class="landing__feature">
+            <div class="landing__feature-icon" aria-hidden="true">🔒</div>
+            <h2>Приватность</h2>
+            <p>Данные остаются в вашем браузере (localStorage). Мы их не собираем и не видим.</p>
+        </article>
+        <article class="landing__feature">
+            <div class="landing__feature-icon" aria-hidden="true">🌙</div>
+            <h2>Светлая и тёмная тема</h2>
+            <p>Выберите комфортный режим — настройка сохраняется между визитами.</p>
+        </article>
+    </section>
+
+    <!-- Как начать -->
+    <section class="landing__steps" aria-labelledby="steps-title">
+        <h2 id="steps-title">Как пользоваться</h2>
+        <ol>
+            <li>Нажмите «Открыть калькулятор».</li>
+            <li>Введите описание, сумму и тип: доход или расход.</li>
+            <li>Смотрите итоги в карточках и таблицах; при необходимости удаляйте отдельные строки.</li>
+        </ol>
+    </section>
+
+    <footer class="landing__footer">
+        <p>Проект с открытым исходным кодом в репозитории. <a href="budget.html">Перейти к приложению</a></p>
+    </footer>
+</main>
+
+<!-- Кнопка темы: тот же паттерн, что и в budget.html -->
+<button type="button" class="theme-toggle" id="themeToggle" aria-label="Переключить тему: светлая или тёмная" title="Светлая / тёмная тема">
+    <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
+    <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
+</button>
+
+<script>
+(function () {
+    var KEY = 'family_budget_theme';
+    function getTheme() {
+        return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    }
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        try {
+            localStorage.setItem(KEY, theme === 'dark' ? 'dark' : 'light');
+        } catch (e) {}
+    }
+    var btn = document.getElementById('themeToggle');
+    if (btn) {
+        btn.addEventListener('click', function () {
+            applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+        });
+    }
+})();
+</script>
+</body>
+</html>
